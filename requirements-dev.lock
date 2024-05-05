@@ -31,7 +31,7 @@ mypy==1.10.0
 mypy-extensions==1.0.0
     # via mypy
 numpy==1.26.4
-    # via hydra
+    # via hydra4
     # via pypcd4
     # via rosbags
 packaging==24.0
@@ -50,7 +50,7 @@ pydantic==2.6.4
 pydantic-core==2.16.3
     # via pydantic
 pypcd4==0.4.11
-    # via hydra
+    # via hydra4
 pyproject-api==1.6.1
     # via tox
 pytest==8.2.0

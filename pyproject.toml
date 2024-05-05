@@ -30,9 +30,9 @@ classifiers = [
     "Topic :: Utilities",
     "Framework :: Robot Framework :: Tool",
 ]
-urls.Source = "https://github.com/MapIV/hydra"
-urls.Tracker = "https://github.com/MapIV/hydra/issues"
-urls."Release Notes" = "https://github.com/MapIV/hydra/releases"
+urls.Source = "https://github.com/MapIV/hydra4"
+urls.Tracker = "https://github.com/MapIV/hydra4/issues"
+urls."Release Notes" = "https://github.com/MapIV/hydra4/releases"
 
 [project.optional-dependencies]
 dev = ["ruff", "mypy", "setuptools-scm"]
@@ -70,7 +70,7 @@ allow-direct-references = true
 
 [tool.hatch]
 version.source = "vcs"
-build.hooks.vcs.version-file = "src/hydra/_version.py"
+build.hooks.vcs.version-file = "src/hydra4/_version.py"
 
 [tool.hatch.version.raw-options]
 local_scheme = "no-local-version"
@@ -83,7 +83,7 @@ exclude = [
 ]
 
 [tool.setuptools_scm]
-write_to = "src/hydra/_version.py"
+write_to = "src/hydra4/_version.py"
 version_scheme = "guess-next-dev"
 local_scheme = "node-and-date"
 

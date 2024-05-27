@@ -58,7 +58,7 @@ class Hydra:
                 ValueError: If the given model is not supported.
             """
             if self == "pandar_xt32":
-                return Path(__file__).parent / "calibrations" / "pandar_xt32.csv"
+                return Path(__file__).parent / "calibrations" / "hesai" / "pandar_xt32.csv"
 
             raise ValueError(f"Unknown model: {self}")
 

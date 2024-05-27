@@ -7,8 +7,8 @@ from typing import Generator
 
 import numpy as np
 
-from ..msgs import pandar_msgs__msg__PandarPacket
-from ..structs import Block, ReturnMode
+from ...msgs import pandar_msgs__msg__PandarPacket
+from ...structs import Block, ReturnMode
 from .base import PandarBase
 
 

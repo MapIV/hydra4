@@ -81,7 +81,7 @@ class PandarXT32(PandarBase):
         if return_mode_ == 0x33:
             return_mode = ReturnMode.FIRST
         elif return_mode_ == 0x37:
-            return_mode = ReturnMode.STRONGET
+            return_mode = ReturnMode.STRONGEST
         elif return_mode_ == 0x38:
             return_mode = ReturnMode.LAST
         elif return_mode_ == 0x39:

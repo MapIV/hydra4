@@ -547,7 +547,7 @@ _TAIL_OFF_TIMESTAMP: int = 21  # Timestamp μs (4 bytes, little-endian)
 
 _RETURN_MODE_MAP: dict[int, ReturnMode] = {
     0x33: ReturnMode.FIRST,
-    0x37: ReturnMode.STRONGET,
+    0x37: ReturnMode.STRONGEST,
     0x38: ReturnMode.LAST,
     0x39: ReturnMode.LAST_STRONGEST,
     0x3B: ReturnMode.LAST_FIRST,

@@ -8,7 +8,7 @@ class TestReturnMode:
         assert ReturnMode.FIRST.is_dual() is False
 
     def test_strongest_is_not_dual(self) -> None:
-        assert ReturnMode.STRONGET.is_dual() is False
+        assert ReturnMode.STRONGEST.is_dual() is False
 
     def test_last_is_not_dual(self) -> None:
         assert ReturnMode.LAST.is_dual() is False
@@ -30,7 +30,7 @@ class TestReturnMode:
 
     def test_all_dual_modes(self) -> None:
         dual = {ReturnMode.LAST_STRONGEST, ReturnMode.LAST_FIRST, ReturnMode.FIRST_STRONGEST}
-        non_dual = {ReturnMode.FIRST, ReturnMode.STRONGET, ReturnMode.LAST}
+        non_dual = {ReturnMode.FIRST, ReturnMode.STRONGEST, ReturnMode.LAST}
         for mode in dual:
             assert mode.is_dual(), f"{mode} should be dual"
         for mode in non_dual:

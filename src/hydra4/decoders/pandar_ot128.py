@@ -637,7 +637,7 @@ class PandarOT128(PandarBase):
         timestamp_us: int = struct.unpack_from("< I", data, tail_offset + _TAIL_OFF_TIMESTAMP)[0]
 
         year: int = year_ + 1900
-        t0: float = datetime(year, month, day, hour, minute, second, timestamp_us).timestamp()
+        t0: float = datetime(year, month, day, hour, minute, second, timestamp_us % 1_000_000).timestamp()
 
         # ── Return mode ──────────────────────────────────────────────────────
         if return_mode_byte not in _RETURN_MODE_MAP:

@@ -95,7 +95,7 @@ class PandarXT32(PandarBase):
 
         year = year_ + 1900
         usecond = int.from_bytes(bytes(usecond_), byteorder="little")
-        timestamp = datetime(year, month, day, hour, minute, second, usecond)
+        timestamp = datetime(year, month, day, hour, minute, second, usecond % 1_000_000)
 
         block_ids = range(0, _NUM_BLOCKS, 2) if return_mode.is_dual() else range(_NUM_BLOCKS)
         block_offset = self.block_offset_dual if return_mode.is_dual() else self.block_offset_single

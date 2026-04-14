@@ -108,7 +108,7 @@ class TestDeduplicate:
         result = Hydra._deduplicate(blk0, blk1, threshold=0.1)
         assert result.dtype == _DTYPE
 
-    def test_zero_threshold_keeps_nothing(self) -> None:
+    def test_zero_threshold_keeps_all(self) -> None:
         """threshold=0 means any distance diff (even 0) triggers keep (>= 0)."""
         blk0 = _pt(x=5.0, y=0.0, z=0.0, ring=0)
         blk1 = _pt(x=5.0, y=0.0, z=0.0, ring=0)

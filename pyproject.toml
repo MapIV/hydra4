@@ -5,24 +5,21 @@ description = "Decode Hesai Pandar Packets to NumPy arrays or PointCloud2 messag
 authors = [{ name = "urasakikeisuke", email = "keisuke.urasaki@map4.jp" }]
 dependencies = [
     "numpy>=1.21.0",
-    "pypcd4>=0.4.11",
+    "pypcd4>=1.0.0",
 ]
 readme = "README.md"
-requires-python = ">= 3.8"
+requires-python = ">=3.10"
 license = { file = "LICENSE.txt" }
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
-    "Operating System :: MacOS :: MacOS X",
-    "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Scientific/Engineering",
     "Topic :: Software Development :: Libraries",
@@ -34,36 +31,20 @@ urls.Source = "https://github.com/MapIV/hydra4"
 urls.Tracker = "https://github.com/MapIV/hydra4/issues"
 urls."Release Notes" = "https://github.com/MapIV/hydra4/releases"
 
-[project.optional-dependencies]
-dev = ["ruff", "mypy", "setuptools-scm"]
-
-[build-system]
-requires = ["hatchling", "hatch-vcs"]
-build-backend = "hatchling.build"
-
-[tool.rye]
-managed = true
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "rosbags>=0.10.0",
     "pytest>=8.2.0",
     "ruff>=0.4.3",
     "pytest-cov>=5.0.0",
-    "mypy>=1.10.0",
+    "ty>=0.0.29",
     "setuptools-scm>=8.0.4",
     "tox>=4.15.0",
 ]
 
-[tool.rye.scripts]
-lint = { chain = [
-    "lint:ruff-lint",
-    "lint:ruff-format",
-    "lint:mypy",
-    "lint:tox",
-] }
-"lint:ruff-lint" = "ruff check --fix src"
-"lint:ruff-format" = "ruff format src"
-"lint:mypy" = "mypy src"
-"lint:tox" = "tox"
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -92,10 +73,15 @@ line-length = 100
 indent-width = 4
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "PLR", "B", "ANN"]
-ignore = ["ANN101", "ANN102", "PLR2004"]
+select = ["E", "F", "I", "PLR", "B"]
+ignore = ["PLR2004"]
 fixable = ["ALL"]
 unfixable = []
+
+[tool.ruff.lint.per-file-ignores]
+# Packet decoders have inherent statement/branch complexity
+"src/hydra4/decoders/pandar_ot128.py" = ["PLR0912", "PLR0915"]
+"src/hydra4/decoders/pandar_xt32.py" = ["PLR0912"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -103,21 +89,16 @@ indent-style = "space"
 docstring-code-format = true
 docstring-code-line-length = 60
 
-[tool.mypy]
-ignore_missing_imports = true
-check_untyped_defs = true
-
 [tool.tox]
 legacy_tox_ini = """
     [tox]
     min_version = 4.0
     isolated_build = true
     env_list =
-        py38
-        py39
         py310
         py311
         py312
+        py313
 
     [testenv]
     deps =

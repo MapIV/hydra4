@@ -4,7 +4,7 @@ dynamic = ["version"]
 description = "Decode Hesai Pandar Packets to NumPy arrays or PointCloud2 messages"
 authors = [{ name = "urasakikeisuke", email = "keisuke.urasaki@map4.jp" }]
 dependencies = [
-    "numpy>=1.21.0",
+    "numpy>=1.22.0",
     "pypcd4>=1.0.0",
 ]
 readme = "README.md"

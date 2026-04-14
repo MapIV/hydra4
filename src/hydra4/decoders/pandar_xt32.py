@@ -11,6 +11,12 @@ from ..msgs import pandar_msgs__msg__PandarPacket
 from ..structs import Block, ReturnMode
 from .base import PandarBase
 
+_BLOCK_SIZE: int = 130  # 2 bytes azimuth + 32 channels × 4 bytes
+_CHANNEL_SIZE: int = 4  # 2 bytes distance + 1 byte intensity + 1 byte reserved
+_NUM_BLOCKS: int = 8
+_NUM_CHANNELS: int = 32
+_DIS_UNIT_M: float = 0.004
+
 
 class PandarXT32(PandarBase):
     def __init__(self, calibration_path: Path, min_distance: float, max_distance: float) -> None:
@@ -42,12 +48,10 @@ class PandarXT32(PandarBase):
         Yields:
             Block: A block of lidar data with associated attributes.
         """
+        data: bytes = bytes(packet.data)
 
-        offset = 0
-
-        pre_header = packet.data[offset : offset + 6]
-        sop_0, sop_1, protocol_version_major, protocol_version_minor, _ = struct.unpack(
-            "! B B B B H", pre_header
+        sop_0, sop_1, protocol_version_major, protocol_version_minor, _ = struct.unpack_from(
+            "! B B B B H", data, 0
         )
 
         if sop_0 != 0xEE or sop_1 != 0xFF:
@@ -56,13 +60,8 @@ class PandarXT32(PandarBase):
         if protocol_version_major != 0x06 or protocol_version_minor != 0x01:
             raise ValueError("Unsupported protocol version")
 
-        offset += 12
-
-        bodies = packet.data[offset : offset + 1040]
-
-        offset += 1040
-
-        tail = packet.data[offset : offset + 24]
+        bodies_offset: int = 12
+        tail_offset: int = bodies_offset + _NUM_BLOCKS * _BLOCK_SIZE  # 12 + 1040 = 1052
 
         (
             _,
@@ -77,7 +76,7 @@ class PandarXT32(PandarBase):
             second,
             *usecond_,
             _,
-        ) = struct.unpack("! 9s B B H B B B B B B 4B B", tail)
+        ) = struct.unpack_from("! 9s B B H B B B B B B 4B B", data, tail_offset)
 
         if return_mode_ == 0x33:
             return_mode = ReturnMode.FIRST
@@ -95,29 +94,31 @@ class PandarXT32(PandarBase):
             raise ValueError("Unsupported return mode")
 
         year = year_ + 1900
-        usecond = int.from_bytes(usecond_, byteorder="little")
+        usecond = int.from_bytes(bytes(usecond_), byteorder="little")
         timestamp = datetime(year, month, day, hour, minute, second, usecond)
 
-        splited_bodies = np.array_split(bodies, 8)
-        splited_bodies = splited_bodies[::2] if return_mode.is_dual() else splited_bodies
+        block_ids = range(0, _NUM_BLOCKS, 2) if return_mode.is_dual() else range(_NUM_BLOCKS)
+        block_offset = self.block_offset_dual if return_mode.is_dual() else self.block_offset_single
 
-        for block_id, body in enumerate(splited_bodies):
-            azimuth = struct.unpack("< H", body[:2])[0]
+        for seq, block_id in enumerate(block_ids):
+            block_off = bodies_offset + block_id * _BLOCK_SIZE
+            (azimuth,) = struct.unpack_from("< H", data, block_off)
             block = Block(azimuth, points=[])
-            for ring, channel in enumerate(np.array_split(body[2:], 32)):
-                distance_, intensity, _ = struct.unpack("< H B B", channel)
 
-                if not 0.1 <= (distance := distance_ * 0.004) < 200.0:
+            for ring in range(_NUM_CHANNELS):
+                ch_off = block_off + 2 + ring * _CHANNEL_SIZE
+                distance_, intensity, _ = struct.unpack_from("< H B B", data, ch_off)
+
+                if distance_ == 0:
+                    continue
+                distance = distance_ * _DIS_UNIT_M
+                if not self.min_distance <= distance < self.max_distance:
                     continue
 
                 xy_distance = distance * np.cos(self.elevations[ring])
                 x = xy_distance * np.sin(np.deg2rad(self.azimuths[ring] + azimuth * 0.01))
                 y = xy_distance * np.cos(np.deg2rad(self.azimuths[ring] + azimuth * 0.01))
                 z = distance * np.sin(self.elevations[ring])
-
-                block_offset = (
-                    self.block_offset_dual if return_mode.is_dual() else self.block_offset_single
-                )
 
                 block.points.append(
                     (
@@ -127,7 +128,7 @@ class PandarXT32(PandarBase):
                         intensity,
                         ring,
                         azimuth,
-                        timestamp.timestamp() + block_offset[block_id] + self.firing_offset[ring],
+                        timestamp.timestamp() + block_offset[seq] + self.firing_offset[ring],
                     )
                 )
 

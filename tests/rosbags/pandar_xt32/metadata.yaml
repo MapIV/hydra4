@@ -1,6 +1,6 @@
 rosbag2_bagfile_information:
   version: 5
-  storage_identifier: sqlite3
+  storage_identifier: "sqlite3"
   duration:
     nanoseconds: 299959153
   starting_time:

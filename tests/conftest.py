@@ -21,26 +21,56 @@ std_msgs/Header   header
 PandarPacket[]    packets
 """
 
+
 class PandarPacket(Protocol):
-  stamp: builtin_interfaces__msg__Time
-  data: npt.NDArray[np.uint8]
-  size: int
+    stamp: builtin_interfaces__msg__Time
+    data: npt.NDArray[np.uint8]
+    size: int
+
 
 class PandarScan(Protocol):
-  header: std_msgs__msg__Header
-  packets: list[PandarPacket]
+    header: std_msgs__msg__Header
+    packets: list[PandarPacket]
+
 
 typestore = get_typestore(Stores.LATEST)
-typestore.register(get_types_from_msg(PANDAR_PACKET, 'pandar_msgs/msg/PandarPacket'))
-typestore.register(get_types_from_msg(PANDAR_SCAN, 'pandar_msgs/msg/PandarScan'))
+typestore.register(get_types_from_msg(PANDAR_PACKET, "pandar_msgs/msg/PandarPacket"))
+typestore.register(get_types_from_msg(PANDAR_SCAN, "pandar_msgs/msg/PandarScan"))
+
+_ROSBAG_DIR = Path(__file__).parent / "rosbags"
 
 
 @pytest.fixture
 def pandar_scans_xt32() -> list[PandarScan]:
-  path = Path(__file__).parent / "rosbags" / "pandar_xt32"
-  with AnyReader([path], default_typestore=typestore) as reader:
-    msgs = []
-    for connection, _, rawdata in reader.messages(connections=reader.connections):
-      msgs.append(reader.deserialize(rawdata, connection.msgtype))
+    path = _ROSBAG_DIR / "pandar_xt32"
+    with AnyReader([path], default_typestore=typestore) as reader:
+        msgs = []
+        for connection, _, rawdata in reader.messages(connections=reader.connections):
+            msgs.append(reader.deserialize(rawdata, connection.msgtype))
+        return msgs
 
-    return msgs
+
+@pytest.fixture
+def pandar_scans_ot128() -> list[PandarScan]:
+    path = _ROSBAG_DIR / "pandar_ot128"
+    with AnyReader([path], default_typestore=typestore) as reader:
+        msgs = []
+        for connection, _, rawdata in reader.messages(connections=reader.connections):
+            msgs.append(reader.deserialize(rawdata, connection.msgtype))
+        return msgs
+
+
+@pytest.fixture
+def pandar_packets_xt32(pandar_scans_xt32: list[PandarScan]) -> list[PandarPacket]:
+    packets: list[PandarPacket] = []
+    for scan in pandar_scans_xt32:
+        packets.extend(scan.packets)
+    return packets
+
+
+@pytest.fixture
+def pandar_packets_ot128(pandar_scans_ot128: list[PandarScan]) -> list[PandarPacket]:
+    packets: list[PandarPacket] = []
+    for scan in pandar_scans_ot128:
+        packets.extend(scan.packets)
+    return packets

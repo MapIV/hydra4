@@ -103,6 +103,10 @@ legacy_tox_ini = """
     [testenv]
     deps =
         pytest
+        pytest-cov
+        ruff
         rosbags
-    commands = pytest tests -vv
+    commands =
+        ruff check src tests
+        pytest tests -vv
 """

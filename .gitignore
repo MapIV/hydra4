@@ -73,3 +73,6 @@ dmypy.json
 
 # Mac OS
 .DS_Store
+
+# Claude
+.claude/

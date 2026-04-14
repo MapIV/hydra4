@@ -112,7 +112,7 @@ class PandarXT32(PandarBase):
                 if distance_ == 0:
                     continue
                 distance = distance_ * _DIS_UNIT_M
-                if not self.min_distance <= distance < self.max_distance:
+                if not self.min_distance <= distance <= self.max_distance:
                     continue
 
                 xy_distance = distance * np.cos(self.elevations[ring])

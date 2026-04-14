@@ -128,7 +128,7 @@ class PandarXT32(PandarBase):
                         intensity,
                         ring,
                         azimuth,
-                        timestamp.timestamp() + block_offset[seq] + self.firing_offset[ring],
+                        timestamp.timestamp() + block_offset[block_id] + self.firing_offset[ring],
                     )
                 )
 

@@ -251,6 +251,11 @@ class Hydra:
 
                 if threshold > 0.0 and current_phase == self.last_phase and self._last_appended:
                     # Second return of a dual-return pair (same azimuth as previous block).
+                    # NOTE: This path is only reachable for sensors (e.g. OT128) that emit
+                    # both return blocks with identical azimuths in a single packet.  The
+                    # XT32 dual-return decoder yields only even-indexed blocks, each with a
+                    # distinct azimuth, so consecutive yields never share an azimuth and
+                    # dual_return_distance_threshold has no effect for XT32.
                     # Pop the first-return block and filter it against the second return.
                     blk0 = self.arrays.pop()
                     blk0_filtered = self._deduplicate(blk0, blk_arr, threshold)

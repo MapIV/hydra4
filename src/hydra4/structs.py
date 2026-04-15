@@ -6,7 +6,7 @@ from enum import Enum
 
 class ReturnMode(str, Enum):
     FIRST = "first"
-    STRONGET = "strongest"
+    STRONGEST = "strongest"
     LAST = "last"
     LAST_STRONGEST = "last_strongest"
     LAST_FIRST = "last_first"

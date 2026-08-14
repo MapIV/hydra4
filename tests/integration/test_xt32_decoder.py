@@ -106,6 +106,15 @@ class TestXT32PointValues:
                 for _, _, _, _, _, pt_az, _ in block.points:
                     assert pt_az == block.azimuth
 
+    def test_point_timestamps_within_packet_are_microseconds_apart(
+        self, decoder: PandarXT32, sample_packets: list
+    ) -> None:
+        """Block and channel firing offsets are measured in microseconds."""
+        points = [point for block in decoder(sample_packets[0]) for point in block.points]
+        stamps = [point[-1] for point in points]
+
+        assert max(stamps) - min(stamps) < 0.001
+
 
 class TestXT32DistanceFilter:
     def test_tighter_min_distance_filters_more(self, pandar_packets_xt32: list) -> None:
